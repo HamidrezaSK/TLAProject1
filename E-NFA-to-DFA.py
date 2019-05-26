@@ -78,6 +78,7 @@ def main():
     dfa_str = ''
     dfa = {}
     end_node = []
+    end_nodes = []
     mid_node = []
     while q:
         now = q.pop(0)
@@ -87,10 +88,11 @@ def main():
         if END in now:
             end_str = '*'
             end_node.append(i)
+            end_nodes.append("q"+str(i))
         else:
             mid_node.append(i)
-        write(str_set(now) + ' ')
-        dfa_str += end_str + "q"+now_index + ' '
+        # write(str_set(now) + ' ')
+        dfa_str += end_str +"q"+ now_index + ' '
         # print(dfa_str)
         next_dict = {}
         for c in liter:
@@ -100,17 +102,57 @@ def main():
                 status.append(next)
             j = status.index(next) if next else -1
             next_index = '%d' % j
-            write(str_set(next) + ' ')
-            dfa_str += 'q'+next_index + ' '
+            # write(str_set(next) + ' ')
+            dfa_str += "q"+next_index + ' '
             next_dict[c] = j
-        write('\n')
+        # write('\n')
         dfa_str += '\n'
         dfa[i] = next_dict
     # write('\ns %s\n%s\n' % (' '.join(liter), dfa_str))
 
-    answer = str(len(status)) + "\n" + '%s\n%s\n' % (','.join(liter), dfa_str)
+    print(end_nodes)
 
-    print(answer)
+
+
+    answer = str(len(status)) + "\n" + '%s\n%s\n' % (','.join(liter), dfa_str)
+    # print(dfa_str.splitlines(),liter)
+
+    listOfDfaStr = dfa_str.splitlines()
+
+    for i in range(len(listOfDfaStr)):
+        x = listOfDfaStr[i].split(" ")[:len(listOfDfaStr[i].split(" "))-1]
+        listOfDfaStr[i] = x
+    # print(listOfDfaStr)
+    
+    ToPrint = ""
+    
+    for i in range(len(listOfDfaStr)):
+        source = listOfDfaStr[i][0]
+        for j in range(len(listOfDfaStr[i])):
+            if j != 0:
+                if j != len(listOfDfaStr[i]) -1:
+                    if source == listOfDfaStr[0][0]:
+                        ToPrint +="->" + source + "," +liter[j-1] + ","  + listOfDfaStr[i][j] + "\n"
+                    else:
+                        ToPrint += source + "," +liter[j-1] + ","  + listOfDfaStr[i][j] + "\n"
+                else:
+                    ToPrint += source + "," +liter[j-1] + ","  + listOfDfaStr[i][j] + "\n"
+    # print(ToPrint,ToPrint.find("q0"))
+
+    for final in end_nodes:
+        print(final)
+        prevoius_final = 0
+        while ToPrint.find(final,prevoius_final) != -1:
+            border = ToPrint.find(final,prevoius_final)
+            if ToPrint[border-1] != "*":
+                ToPrint = ToPrint[:border] + "*" + ToPrint[border:]
+                prevoius_final = border + 3
+            else:
+                prevoius_final = border + 3
+    print(ToPrint)
+
+    write(ToPrint)
+            
     # print('s %s\n%s\n' % (' '.join(liter), dfa_str))
     # print(liter,dfa_str )
     q = [[end_node, True], [mid_node, True]]
@@ -152,7 +194,7 @@ def main():
                 break
     split = [x for x, y in q]
     split.sort()
-    write(str(split).replace('[', '{').replace(']', '}') + '\n')
+    # write(str(split).replace('[', '{').replace(']', '}') + '\n')
     for x in split:
         if len(x) > 1:
             rep = x[0]
@@ -162,12 +204,12 @@ def main():
                         if dfa[j][c] == x[i]:
                             dfa[j][c] = rep
                 del dfa[x[i]]
-    write('\ns %s\n' % (' '.join(liter)))
-    for i in dfa:
-        write('%d%s ' % (i, '*' if i in end_node else ''))
-        for c in liter:
-            write('%d ' % dfa[i][c])
-        write('\n')
+    # write('\ns %s\n' % (' '.join(liter)))
+    # for i in dfa:
+    #     write('%d%s ' % (i, '*' if i in end_node else ''))
+    #     for c in liter:
+            # write('%d ' % dfa[i][c])
+        # write('\n')
     fin.close()
     fout.close()
 
